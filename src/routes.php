@@ -1,6 +1,6 @@
 <?php
 
 return [
-    '~^hello/(.*)$~' => [\Blog\Controllers\MainController::class, 'sayHello'],
+    '~^articles/(\d+)$~' => [\Blog\Controllers\ArticlesController::class, 'view'],
     '~^$~' => [\Blog\Controllers\MainController::class, 'main'],
 ];
