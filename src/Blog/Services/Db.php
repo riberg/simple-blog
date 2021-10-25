@@ -2,6 +2,8 @@
 
 namespace Blog\Services;
 
+use Blog\Exceptions\DbException;
+
 class Db
 {
     /** @var \PDO */
@@ -11,14 +13,18 @@ class Db
 
     private function __construct()
     {
-        $dbOptions = (require __DIR__ . '/../../settings.php')['db'];
+        try {
+            $dbOptions = (require __DIR__ . '/../../settings.php')['db'];
 
-        $this->pdo = new \PDO(
-            'mysql:host=' . $dbOptions['host'] . ';dbname=' . $dbOptions['dbname'],
-            $dbOptions['user'],
-            $dbOptions['password']
-        );
-        $this->pdo->exec('SET NAMES UTF8');
+            $this->pdo = new \PDO(
+                'mysql:host=' . $dbOptions['host'] . ';dbname=' . $dbOptions['dbname'],
+                $dbOptions['user'],
+                $dbOptions['password']
+            );
+            $this->pdo->exec('SET NAMES UTF8');
+        } catch (\PDOException $e) {
+            throw new DbException('Error connecting to the database: ' . $e->getMessage());
+        }
     }
 
     public function query(string $sql, $params = [], string $className = 'stdClass'): ?array
@@ -40,5 +46,10 @@ class Db
         }
 
         return self::$instance;
+    }
+
+    public function getLastInsertId(): int
+    {
+        return (int) $this->pdo->lastInsertId();
     }
 }
