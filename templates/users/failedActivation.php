@@ -1,6 +1,6 @@
 <?php include __DIR__ . '/../header.php'; ?>
 <div style="text-align: center">
-    <h1>Activation could not be completed!</h1>
+    <h1>Не удалось завершить активацию!</h1>
     <br>
     <p><?= $error ?></p>
 </div>

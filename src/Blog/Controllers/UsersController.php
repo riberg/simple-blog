@@ -24,7 +24,7 @@ class UsersController extends AbstractController
             if ($user instanceof User) {
                 $code = UserActivationService::createActivationCode($user);
 
-                EmailSender::send($user, 'Activation', 'userActivation.php', [
+                EmailSender::send($user, 'Активация', 'userActivation.php', [
                     'userId' => $user->getId(),
                     'code' => $code
                 ]);
@@ -42,12 +42,12 @@ class UsersController extends AbstractController
         try {
             $user = User::getById($userId);
             if ($user === null) {
-                throw new ActivationException('No such user');
+                throw new ActivationException('Такого пользователя не существует');
             }
 
             $isCodeValid = UserActivationService::checkActivationCode($user, $activationCode);
             if (!$isCodeValid) {
-                throw new ActivationException('Invalid activation code');
+                throw new ActivationException('Неверный код активации');
             }
 
             if ($isCodeValid) {

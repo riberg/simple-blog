@@ -2,8 +2,9 @@
 
 namespace Blog\Controllers;
 
+use Blog\Exceptions\InvalidArgumentException;
 use Blog\Exceptions\NotFoundException;
-use Blog\Models\Users\User;
+use Blog\Exceptions\UnauthorizedException;
 use Blog\Models\Articles\Article;
 
 class ArticlesController extends AbstractController
@@ -30,23 +31,31 @@ class ArticlesController extends AbstractController
             throw new NotFoundException();
         }
 
-        $article->setName('New article name');
-        $article->setText('New article text');
+        $article->setName('Название новой статьи');
+        $article->setText('Текст новой статьи');
 
         $article->save();
     }
 
     public function add(): void
     {
-        $author = User::getById(1);
+        if ($this->user === null) {
+            throw new UnauthorizedException();
+        }
 
-        $article = new Article();
-        $article->setAuthor($author);
-        $article->setName('New name');
-        $article->setText('New text');
+        if (!empty($_POST)) {
+            try {
+                $article = Article::createFromArray($_POST, $this->user);
+            } catch (InvalidArgumentException $e) {
+                $this->view->renderHtml('articles/add.php', ['error' => $e->getMessage()]);
+                return;
+            }
 
-        $article->save();
-        var_dump($article);
+            header('Location: /articles/' . $article->getId(), true, 302);
+            exit();
+        }
+
+        $this->view->renderHtml('articles/add.php');
     }
 
     public function delete(int $articleId): void

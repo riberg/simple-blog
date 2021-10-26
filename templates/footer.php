@@ -1,16 +1,16 @@
 </td>
 
-<td width="300px" class="sidebar">
-    <div class="sidebarHeader">Menu</div>
+<td style="width: 300px" class="sidebar">
+    <div class="sidebarHeader">Меню</div>
     <ul>
-        <li><a href="/">Main page</a></li>
-        <li><a href="/about-me">About me</a></li>
+        <li><a href="/">Главная страница</a></li>
+        <li><a href="/about-me">Обо мне</a></li>
     </ul>
 </td>
 </tr>
 <tr>
     <td colspan="2" class="footer">
-        All rights reserved (c) Blog
+        Все права защищены (c) Блог
     </td>
 </tr>
 </table>

@@ -57,36 +57,36 @@ class User extends ActiveRecordEntity
     {
         // All checks
         if (empty($userData['nickname'])) {
-            throw new InvalidArgumentException('Nickname not passed');
+            throw new InvalidArgumentException('Не передан nickname');
         }
 
         if (!preg_match('/^[a-zA-Z0-9]+$/', $userData['nickname'])) {
             throw new InvalidArgumentException(
-                'Nickname can consist only of Latin alphabet characters and numbers');
+                'Nickname может содержать только буквы латинского алфавита и цифры');
         }
 
         if (empty($userData['email'])) {
-            throw new InvalidArgumentException('Email not passed');
+            throw new InvalidArgumentException('Не передан email');
         }
 
         if (!filter_var($userData['email'], FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException('Email is incorrect');
+            throw new InvalidArgumentException('Неверный email');
         }
 
         if (empty($userData['password'])) {
-            throw new InvalidArgumentException('Password not passed');
+            throw new InvalidArgumentException('Не передан пароль');
         }
 
         if (mb_strlen($userData['password']) < 8) {
-            throw new InvalidArgumentException('Password must be at least 8 characters long');
+            throw new InvalidArgumentException('Пароль должен быть не менее 8 символов');
         }
 
         if (static::findOneByColumn('nickname', $userData['nickname']) !== null) {
-            throw new InvalidArgumentException('User with this nickname already exists');
+            throw new InvalidArgumentException('Пользователь с таким nickname уже существует');
         }
 
         if (static::findOneByColumn('email', $userData['email']) !== null) {
-            throw new InvalidArgumentException('User with this email already exists');
+            throw new InvalidArgumentException('Пользователь с таким email уже существует');
         }
 
         // Create a new user
@@ -111,24 +111,24 @@ class User extends ActiveRecordEntity
     public static function login(array $loginData): User
     {
         if (empty($loginData['email'])) {
-            throw new InvalidArgumentException('Email not transmitted');
+            throw new InvalidArgumentException('Не передан email');
         }
 
         if (empty($loginData['password'])) {
-            throw new InvalidArgumentException('Password not transmitted');
+            throw new InvalidArgumentException('Не передан пароль');
         }
 
         $user = User::findOneByColumn('email', $loginData['email']);
         if ($user === null) {
-            throw new InvalidArgumentException('There is no user with this email');
+            throw new InvalidArgumentException('Пользователя с таким email не существует');
         }
 
         if (!password_verify($loginData['password'], $user->getPasswordHash())) {
-            throw new InvalidArgumentException('Incorrect password');
+            throw new InvalidArgumentException('Неверный пароль');
         }
 
         if (!$user->isConfirmed) {
-            throw new InvalidArgumentException('The user is not confirmed');
+            throw new InvalidArgumentException('Пользователь не подтвержден');
         }
 
         $user->refreshAuthToken();

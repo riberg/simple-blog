@@ -38,7 +38,7 @@ class UsersAuthService
     public static function deleteToken()
     {
         if (!isset($_COOKIE['token'])) {
-            throw new ForbiddenException('Unauthorized access');
+            throw new ForbiddenException('Несанкционированный доступ');
         }
 
         setcookie('token', '', 0, '/', '', false, true);
