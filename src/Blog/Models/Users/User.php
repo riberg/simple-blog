@@ -38,6 +38,16 @@ class User extends ActiveRecordEntity
         return $this->email;
     }
 
+    public function getPasswordHash(): string
+    {
+        return $this->passwordHash;
+    }
+
+    public function getAuthToken(): string
+    {
+        return $this->authToken;
+    }
+
     protected static function getTableName(): string
     {
         return 'users';
@@ -96,5 +106,39 @@ class User extends ActiveRecordEntity
     {
         $this->isConfirmed = true;
         $this->save();
+    }
+
+    public static function login(array $loginData): User
+    {
+        if (empty($loginData['email'])) {
+            throw new InvalidArgumentException('Email not transmitted');
+        }
+
+        if (empty($loginData['password'])) {
+            throw new InvalidArgumentException('Password not transmitted');
+        }
+
+        $user = User::findOneByColumn('email', $loginData['email']);
+        if ($user === null) {
+            throw new InvalidArgumentException('There is no user with this email');
+        }
+
+        if (!password_verify($loginData['password'], $user->getPasswordHash())) {
+            throw new InvalidArgumentException('Incorrect password');
+        }
+
+        if (!$user->isConfirmed) {
+            throw new InvalidArgumentException('The user is not confirmed');
+        }
+
+        $user->refreshAuthToken();
+        $user->save();
+
+        return $user;
+    }
+
+    private function refreshAuthToken()
+    {
+        $this->authToken = sha1(random_bytes(100)) . sha1(random_bytes(100));
     }
 }

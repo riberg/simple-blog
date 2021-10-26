@@ -3,20 +3,11 @@
 namespace Blog\Controllers;
 
 use Blog\Exceptions\NotFoundException;
-use Blog\View\View;
 use Blog\Models\Users\User;
 use Blog\Models\Articles\Article;
 
-class ArticlesController
+class ArticlesController extends AbstractController
 {
-    /** @var View */
-    private $view;
-
-    public function __construct()
-    {
-        $this->view = new View(__DIR__ . '/../../../templates');
-    }
-
     public function view(int $articleId): void
     {
         $article = Article::getById($articleId);

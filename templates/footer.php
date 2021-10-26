@@ -10,7 +10,7 @@
 </tr>
 <tr>
     <td colspan="2" class="footer">
-        All rights reserved (c) My Blog
+        All rights reserved (c) Blog
     </td>
 </tr>
 </table>

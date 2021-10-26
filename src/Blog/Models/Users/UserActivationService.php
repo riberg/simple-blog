@@ -24,6 +24,11 @@ class UserActivationService
         return $code;
     }
 
+    /**
+     * @param User $user
+     * @param string $code
+     * @return bool
+     */
     public static function checkActivationCode(User $user, string $code): bool
     {
         $db = Db::getInstance();
@@ -36,5 +41,21 @@ class UserActivationService
         );
 
         return !empty($result);
+    }
+
+    /**
+     * @param User $user
+     * @param string $code
+     */
+    public static function deleteActivationCode(User $user, string $code): void
+    {
+        $db = Db::getInstance();
+        $db->query(
+            'DELETE FROM `' . self::TABLE_NAME . '` WHERE user_id = :user_id AND code = :code',
+            [
+                'user_id' => $user->getId(),
+                'code' => $code
+            ]
+        );
     }
 }

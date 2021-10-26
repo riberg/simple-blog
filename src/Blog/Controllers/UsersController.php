@@ -2,22 +2,15 @@
 
 namespace Blog\Controllers;
 
+use Blog\Exceptions\ActivationException;
 use Blog\Exceptions\InvalidArgumentException;
 use Blog\Models\Users\UserActivationService;
+use Blog\Models\Users\UsersAuthService;
 use Blog\Services\EmailSender;
-use Blog\View\View;
 use Blog\Models\Users\User;
 
-class UsersController
+class UsersController extends AbstractController
 {
-    /** @var View */
-    private $view;
-
-    public function __construct()
-    {
-        $this->view = new View(__DIR__ . '/../../../templates');
-    }
-
     public function singUp()
     {
         if (!empty($_POST)) {
@@ -46,11 +39,47 @@ class UsersController
 
     public function activate(int $userId, string $activationCode)
     {
-        $user = User::getById($userId);
-        $isCodeValid = UserActivationService::checkActivationCode($user, $activationCode);
-        if ($isCodeValid) {
-            $user->activate();
-            echo 'OK!';
+        try {
+            $user = User::getById($userId);
+            if ($user === null) {
+                throw new ActivationException('No such user');
+            }
+
+            $isCodeValid = UserActivationService::checkActivationCode($user, $activationCode);
+            if (!$isCodeValid) {
+                throw new ActivationException('Invalid activation code');
+            }
+
+            if ($isCodeValid) {
+                $user->activate();
+                $this->view->renderHtml('users/successfulActivation.php', []);
+                UserActivationService::deleteActivationCode($user, $activationCode);
+                return;
+            }
+        } catch (ActivationException $e) {
+            $this->view->renderHtml('users/failedActivation.php', ['error' => $e->getMessage()]);
         }
+    }
+
+    public function login()
+    {
+        if (!empty($_POST)) {
+            try {
+                $user = User::login($_POST);
+                UsersAuthService::createToken($user);
+                header('Location: /');
+                exit();
+            } catch (InvalidArgumentException $e) {
+                $this->view->renderHtml('users/login.php', ['error' => $e->getMessage()]);
+                return;
+            }
+        }
+        $this->view->renderHtml('users/login.php');
+    }
+
+    public function logout()
+    {
+        UsersAuthService::deleteToken();
+        header('Location: /');
     }
 }

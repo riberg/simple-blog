@@ -3,21 +3,16 @@
 namespace Blog\Controllers;
 
 use Blog\Models\Articles\Article;
-use Blog\View\View;
+use Blog\Models\Users\UsersAuthService;
 
-class MainController
+class MainController extends AbstractController
 {
-    /** @var View */
-    private $view;
-
-    public function __construct()
-    {
-        $this->view = new View(__DIR__ . '/../../../templates');
-    }
-
     public function main()
     {
         $articles = Article::findAll();
-        $this->view->renderHtml('main/main.php', ['articles' => $articles]);
+        $this->view->renderHtml('main/main.php', [
+            'articles' => $articles,
+            'user' => UsersAuthService::getUserByToken()
+        ]);
     }
 }
