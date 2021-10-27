@@ -2,6 +2,7 @@
 
 namespace Blog\Controllers;
 
+use Blog\Exceptions\ForbiddenException;
 use Blog\Exceptions\InvalidArgumentException;
 use Blog\Exceptions\NotFoundException;
 use Blog\Exceptions\UnauthorizedException;
@@ -22,7 +23,7 @@ class ArticlesController extends AbstractController
         ]);
     }
 
-    public function edit(int $articleId): void
+    public function edit(int $articleId)
     {
         /** @var Article $article */
         $article = Article::getById($articleId);
@@ -31,14 +32,38 @@ class ArticlesController extends AbstractController
             throw new NotFoundException();
         }
 
-        $article->setName('Название новой статьи');
-        $article->setText('Текст новой статьи');
+        if (!$this->user->isAdmin()) {
+            throw new ForbiddenException('Редактировать статью может только администратор');
+        }
 
-        $article->save();
+        if ($this->user === null) {
+            throw new UnauthorizedException();
+        }
+
+        if (!empty($_POST)) {
+            try {
+                $article->updateFromArray($_POST);
+            } catch (InvalidArgumentException $e) {
+                $this->view->renderHtml('/articles/edit.php', [
+                    'error' => $e->getMessage(),
+                    'article' => $article
+                    ]);
+                return;
+            }
+
+            header('Location: /articles/' . $article->getId(), true, 302);
+            exit();
+        }
+
+        $this->view->renderHtml('articles/edit.php', ['article' => $article]);
     }
 
     public function add(): void
     {
+        if (!$this->user->isAdmin()) {
+            throw new ForbiddenException('Добавить статью может только администратор');
+        }
+
         if ($this->user === null) {
             throw new UnauthorizedException();
         }
