@@ -1,0 +1,17 @@
+{
+    "name": "riberg/blog.loc",
+    "type": "project",
+    "license": "porprietary",
+    "autoload": {
+        "psr-4": {
+            "Riberg\\BlogLoc\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Denis Radaev",
+            "email": "den.radaeff@gmail.com"
+        }
+    ],
+    "require": {}
+}
