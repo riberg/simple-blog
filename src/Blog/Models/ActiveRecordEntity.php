@@ -4,7 +4,7 @@ namespace Blog\Models;
 
 use Blog\Services\Db;
 
-abstract class ActiveRecordEntity
+abstract class ActiveRecordEntity implements \JsonSerializable
 {
     /** @var int */
     protected $id;
@@ -155,5 +155,34 @@ abstract class ActiveRecordEntity
         }
 
         return $result[0];
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->mapPropertiesToDbFormat();
+    }
+
+    public static function getPagesCount(int $itemsPerPage): int
+    {
+        $db = Db::getInstance();
+        $result = $db->query(
+            'SELECT COUNT(*) AS cnt FROM ' . static::getTableName() . ';'
+        );
+        return ceil($result[0]->cnt / $itemsPerPage);
+    }
+
+    public static function getPage(int $pageNum, int $itemPerPage): array
+    {
+        $db = Db::getInstance();
+        return $db->query(
+            sprintf(
+                'SELECT * FROM `%s` ORDER BY id DESC LIMIT %d OFFSET %d;',
+                static::getTableName(),
+                $itemPerPage,
+                ($pageNum - 1) * $itemPerPage
+            ),
+            [],
+            static::class
+        );
     }
 }

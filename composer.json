@@ -1,10 +1,10 @@
 {
     "name": "riberg/blog.loc",
     "type": "project",
-    "license": "porprietary",
+    "license": "proprietary",
     "autoload": {
         "psr-4": {
-            "Riberg\\BlogLoc\\": "src/"
+            "Blog\\": "src/Blog"
         }
     },
     "authors": [

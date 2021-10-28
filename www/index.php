@@ -1,9 +1,7 @@
 <?php
 
 try {
-    spl_autoload_register(function (string $className) {
-        require_once __DIR__ . '/../src/' . str_replace('\\', '/', $className) . '.php';
-    });
+    require __DIR__ . '/../vendor/autoload.php';
 
     $route = $_GET['route'] ?? '';
     $routes = require __DIR__ . '/../src/routes.php';

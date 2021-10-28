@@ -10,4 +10,5 @@ return [
     '~^users/logout$~' => [\Blog\Controllers\UsersController::class, 'logout'],
     '~^users/(\d+)/activate/(.+)$~' => [\Blog\Controllers\UsersController::class, 'activate'],
     '~^$~' => [\Blog\Controllers\MainController::class, 'main'],
+    '~^(\d+)$~' => [\Blog\Controllers\MainController::class, 'page'],
 ];
